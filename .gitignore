@@ -174,3 +174,4 @@ cython_debug/
 .pypirc
 
 project_structure.txt
+credentials.txt

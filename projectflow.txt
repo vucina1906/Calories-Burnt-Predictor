@@ -1,13 +1,21 @@
 -------------------------Setting up project structure and notebook analysis---------------------------
 
-1. Creating GitHub repo, cloning it locally  
-2. Creating virtual environment named 'calories-ml' conda create -n calories-ml python=3.10 -y
-3. Activating the virtual environment - conda activate calories-ml 
-4. Installing packages inside venv - pip install numpy pandas matplotlib seaborn ipykernel scikit-learn xgboost notebook
-5. Conecting new venv with Jupyter - python -m ipykernel install --user --name=calories-ml --display-name "Python (calories-ml)"
-6. Starting Jupyter notebook while inside venv - jupyter notebook
-7. Analysis in notebook inlcuding EDA, preprocessing, model training and evaluation
-8. First gid add . - commit - push 
+1.  Creating GitHub repo, cloning it locally  
+2.  Creating virtual environment named 'calories-ml' conda create -n calories-ml python=3.10 -y
+3.  Activating the virtual environment - conda activate calories-ml 
+4.  Installing packages inside venv - pip install numpy pandas matplotlib seaborn ipykernel scikit-learn xgboost notebook
+5.  Conecting new venv with Jupyter - python -m ipykernel install --user --name=calories-ml --display-name "Python (calories-ml)"
+6.  Starting Jupyter notebook while inside venv - jupyter notebook
+7.  Analysis in notebook inlcuding EDA, preprocessing, model training and evaluation
+8.  First gid add . - commit - push 
 
 -------------------------Setup MLFlow on Dagshub---------------------------
 
+9.  DAagshub link: https://dagshub.com/dashboard 
+10. Create > New Repo > Connect a repo > (Github) Connect > Select your repo > Connect
+11. pip install dagshub & mlflow in virtual environment
+12. First experiment - file called experiment1, connecting base model (xgboost) and doing few runs with changing hyperparameters (example with n_estimators change)
+13. Second experiment - connecting and comparing base model vs another models and comparing results in MLFlow (we get best results for xgboost algorithm)
+14. Third experiment - xgboost hyperparameters tuning to get the best model for predictions
+
+Finishing and collecting all info in our first notebook where whole EDA started
