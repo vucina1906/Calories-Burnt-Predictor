@@ -178,4 +178,4 @@ credentials.txt
 local_s3/
 src/connections/config.json 
 models/
-data/
+/data/

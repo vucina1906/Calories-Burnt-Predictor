@@ -50,8 +50,8 @@
     >> Make sure to save token 
     >> Add this auth token to github project repository, go to security/secret&var/Actions and finally update on ci file (name )
 41. git add ./commit/push but before pushing code check for down bellow: 
-    1. gitignore must have /data to not truck files in that folder
+    1. gitignore must have /data/ to not truck files in that folder (this is root data folder not scr/data so do not write /data in gitignore write /data/)
     2. create dagshub token and add to github repository secrets 
     3. check your script and comment local code but uncomment production code that uses dugshub token (model_evaluation.py, model_register.py,app.py)
-
+    4. add AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, S3_BUCKET_NAME and AWS_REGION from your config.json file into GitHub secrets
 
