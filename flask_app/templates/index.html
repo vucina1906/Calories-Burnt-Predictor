@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calories Burnt Predictor</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <div class="container py-5">
+        <div class="card shadow-lg p-4">
+            <h1 class="text-center mb-4">Calories Burnt Predictor</h1>
+            <form method="POST" action="/predict">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="Gender" class="form-label">Gender</label>
+                        <select class="form-select" name="Gender" required>
+                            <option value="" disabled selected>Select...</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="Age" class="form-label">Age</label>
+                        <input type="number" class="form-control" name="Age" required min="0">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="Height" class="form-label">Height (cm)</label>
+                        <input type="number" class="form-control" name="Height" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="Weight" class="form-label">Weight (kg)</label>
+                        <input type="number" class="form-control" name="Weight" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="Duration" class="form-label">Duration (min)</label>
+                        <input type="number" class="form-control" name="Duration" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="Heart_Rate" class="form-label">Heart Rate (bpm)</label>
+                        <input type="number" class="form-control" name="Heart_Rate" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="Body_Temp" class="form-label">Body Temp (°C)</label>
+                        <input type="number" class="form-control" step="0.1" name="Body_Temp" required>
+                    </div>
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg">Predict Calories</button>
+                </div>
+            </form>
+
+            {% if result is not none %}
+                <div class="alert alert-success mt-4 text-center" role="alert">
+                    🔥 You burned <strong>{{ result }}</strong> calories!
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

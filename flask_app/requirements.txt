@@ -1,0 +1,6 @@
+flask==2.3.2
+pandas==1.5.3
+mlflow==2.10.1
+dagshub==0.3.13
+prometheus_client==0.17.1
+gunicorn==21.2.0

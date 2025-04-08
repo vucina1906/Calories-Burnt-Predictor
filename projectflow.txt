@@ -9,7 +9,7 @@
 7.  Analysis in notebook inlcuding EDA, preprocessing, model training and evaluation
 8.  First gid add . - commit - push 
 
--------------------------Setup MLFlow on Dagshub---------------------------
+-------------------------Setup MLFlow on Dagshub ( Experiments Part)---------------------------
 
 9.  DAagshub link: https://dagshub.com/dashboard 
 10. Create > New Repo > Connect a repo > (Github) Connect > Select your repo > Connect
@@ -17,5 +17,41 @@
 12. First experiment - file called experiment1, connecting base model (xgboost) and doing few runs with changing hyperparameters (example with n_estimators change)
 13. Second experiment - connecting and comparing base model vs another models and comparing results in MLFlow (we get best results for xgboost algorithm)
 14. Third experiment - xgboost hyperparameters tuning to get the best model for predictions
+15. Finishing and collecting all info in our first notebook where whole EDA started 
+16. on terminal - dvc init 
+17. create a local folder as "local_s3" (temporary work) 
+18. on terminal - "dvc remote add -d mylocal local_s3"
 
-Finishing and collecting all info in our first notebook where whole EDA started
+------------------------Building an aplication---------------------------------------------------
+
+19. Creating src directory where I will store all components (data_ingestion file, data_preprocessing etc..)
+20. Creating src/data/data_ingestion.py (testing by loading local files then loading from AWS s3 bucket). Then create IAM user and create access and secret keys. 
+    Inside src/connections create config.json file and add your AWS credentials for IAM user. Add data to s3 bucket before testing.
+21. Creating src/data/data_preprocessing.py 
+22. Creating src/features/feature_engineering.py 
+23. Creating src/model/model_building.py 
+24. Creating src/model/model_evaluation.py (testing locally first ,production code commented out, and connecting to dagshub mlflow)
+25. Creating src/model/model_register.py (also testing locally first, production code commented out, and connecting to dagshub mlflow )
+26. Creating dvc.yaml file (all components combined in pipeline)
+27. Run dvc.yaml file using command dvc repro
+28. pip install - dvc[s3] & awscli 
+29. Checking/deleting dvc remote - [dvc remote list & dvc remote remove mylocal] , because we are going to use aws s3 bucket
+30. Set aws cred using command - aws configure (user your access key and secret key that you created for IAM user, also can be found in config.json file) 
+31. Add s3 as dvc remote storage - dvc remote add -d myremote s3://<bucket-name>
+32. Run dvc status and dvc commit commands (check dvc lock file if everything is tracked)
+33. dvc push (tracking files pushed to s3 bucket) - image name ./3_dvc_push_to_s3_bucket
+34. Create new directory flask_app and inside that all files related to application
+35. Inside flask_app folder create requirements.txt file that will be used by docker (separated from project root folder requirements.txt file to reduce the size of Docker image) 
+36. pip install -r flask_app/requirements.txt (so you can install packages needed for aplication local testing) 
+37. run app from root folder with command python -m flask_app.app (local app testing) - image 1_app_local_testing 
+38. pip freeze > requirements.txt (saved in root folder, requirements for the whole project, you can install at the beggining of the project) 
+39. Create .github/workflows/ci.yaml file (till line 34, dvc repro part)
+40. Create key token on Dagshub for auth: Go to dagshub repo > Your settings > Tokens > Generate new token (name Calories-Burnt-Pred)
+    >> Make sure to save token 
+    >> Add this auth token to github project repository, go to security/secret&var/Actions and finally update on ci file (name )
+41. git add ./commit/push but before pushing code check for down bellow: 
+    1. gitignore must have /data to not truck files in that folder
+    2. create dagshub token and add to github repository secrets 
+    3. check your script and comment local code but uncomment production code that uses dugshub token (model_evaluation.py, model_register.py,app.py)
+
+
