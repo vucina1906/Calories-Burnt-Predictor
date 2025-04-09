@@ -5,26 +5,35 @@ import json
 import os
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import mlflow
-import dagshub
 from src.logger import logging
 
-#Below is code for production use 
+# =======================
+# For production use (GitHub Actions / CI/CD)
+# =======================
 dagshub_token = os.getenv("CALORIES_BURNT_PRED")
+dagshub_username = "vucina19931906"  # ✅ Set your correct DagsHub username here
+
 if dagshub_token:
-    os.environ["MLFLOW_TRACKING_USERNAME"] = "vucina19931906"
+    os.environ["MLFLOW_TRACKING_USERNAME"] = dagshub_username
     os.environ["MLFLOW_TRACKING_PASSWORD"] = dagshub_token
-    logging.info("✅ MLflow credentials loaded from CALORIES_BURNT_PRED")
+    logging.info("✅ MLflow credentials loaded from GitHub Secrets (CALORIES_BURNT_PRED)")
+else:
+    logging.error("❌ CALORIES_BURNT_PRED not found in environment variables")
 
 dagshub_url = "https://dagshub.com"
-repo_owner = "vucina19931906"  
+repo_owner = dagshub_username
 repo_name = "Calories-Burnt-Predictor"
+
 mlflow.set_tracking_uri(f"{dagshub_url}/{repo_owner}/{repo_name}.mlflow")
+mlflow.set_experiment("Calories-Burnt-Evaluation")
 
+# =======================
+# For local use (Uncomment if testing locally)
+# =======================
+# mlflow.set_tracking_uri('https://dagshub.com/vucina19931906/Calories-Burnt-Predictor.mlflow')
+# dagshub.init(repo_owner="vucina19931906", repo_name="Calories-Burnt-Predictor", mlflow=True)
+# mlflow.set_experiment("Calories-Burnt-Evaluation")
 
-# Below code block is for local use
-""" mlflow.set_tracking_uri('https://dagshub.com/vucina19931906/Calories-Burnt-Predictor.mlflow')
-dagshub.init(repo_owner="vucina19931906", repo_name="Calories-Burnt-Predictor", mlflow=True)
-mlflow.set_experiment("Calories-Burnt-BestModel-Evaluation") """
 
 def load_model(file_path: str):
     try:
@@ -82,6 +91,9 @@ def save_model_info(run_id: str, model_path: str, filepath: str):
 
 def main():
     try:
+        logging.info("📦 Starting model evaluation stage...")
+        logging.info(f"MLflow tracking URI: {mlflow.get_tracking_uri()}")
+
         with mlflow.start_run() as run:
             model = load_model("models/model.pkl")
             X_test, y_test = load_data("data/processed/test_features.csv", "data/processed/test_target.csv")
@@ -98,11 +110,11 @@ def main():
                 for param, val in model.get_params().items():
                     mlflow.log_param(param, val)
 
+            # Log model & artifacts
             mlflow.sklearn.log_model(model, "model")
             save_model_info(run.info.run_id, "model", "reports/experiment_info.json")
-
-            # Log artifacts
             mlflow.log_artifact("reports/metrics.json")
+
             logging.info("✅ Model evaluation and logging complete.")
     
     except Exception as e:
