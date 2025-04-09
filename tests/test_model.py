@@ -30,7 +30,7 @@ class TestCaloriesModel(unittest.TestCase):
         cls.model_uri = f"models:/{cls.model_name}/{cls.model_version}"
         cls.model = mlflow.pyfunc.load_model(cls.model_uri)
 
-        # Load holdout features and target data
+        #  Load holdout features and target data
         cls.X_holdout = pd.read_csv("data/processed/test_features.csv")
         cls.y_holdout = pd.read_csv("data/processed/test_target.csv").squeeze()
 
