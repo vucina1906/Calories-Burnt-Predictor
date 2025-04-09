@@ -35,7 +35,7 @@ class TestCaloriesModel(unittest.TestCase):
         cls.y_holdout = pd.read_csv("data/processed/test_target.csv").squeeze()
 
     @staticmethod
-    def get_latest_model_version(model_name, stage="Production"):
+    def get_latest_model_version(model_name, stage="Staging"):
         client = mlflow.MlflowClient()
         versions = client.get_latest_versions(model_name, stages=[stage])
         if not versions:
