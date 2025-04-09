@@ -6,6 +6,7 @@ import os
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import mlflow
 from src.logger import logging
+import dagshub
 
 # =======================
 # For production use (GitHub Actions / CI/CD)
@@ -30,9 +31,9 @@ mlflow.set_experiment("Calories-Burnt-Evaluation")
 # =======================
 # For local use (Uncomment if testing locally)
 # =======================
-# mlflow.set_tracking_uri('https://dagshub.com/vucina19931906/Calories-Burnt-Predictor.mlflow')
-# dagshub.init(repo_owner="vucina19931906", repo_name="Calories-Burnt-Predictor", mlflow=True)
-# mlflow.set_experiment("Calories-Burnt-Evaluation")
+""" mlflow.set_tracking_uri('https://dagshub.com/vucina19931906/Calories-Burnt-Predictor.mlflow')
+dagshub.init(repo_owner="vucina19931906", repo_name="Calories-Burnt-Predictor", mlflow=True)
+mlflow.set_experiment("Calories-Burnt-Evaluation") """
 
 
 def load_model(file_path: str):

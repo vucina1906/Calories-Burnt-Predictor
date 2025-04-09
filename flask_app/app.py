@@ -5,7 +5,6 @@ import pandas as pd
 import dagshub
 import time
 from prometheus_client import Counter, Histogram, generate_latest, CollectorRegistry, CONTENT_TYPE_LATEST
-from src.logger import logging
 
 # === MLflow / DagsHub Setup ===
 
@@ -22,7 +21,7 @@ dagshub_token = os.getenv("CALORIES_BURNT_PRED")
 if dagshub_token:
     os.environ["MLFLOW_TRACKING_USERNAME"] = dagshub_token
     os.environ["MLFLOW_TRACKING_PASSWORD"] = dagshub_token
-    logging.info("✅ MLflow credentials loaded from CALORIES_BURNT_PRED")
+    
 
 dagshub_url = "https://dagshub.com"
 repo_owner = "vucina19931906"  
@@ -42,7 +41,7 @@ PREDICTION_COUNT = Counter("model_prediction_count", "Prediction counts", ["resu
 # === Load Latest Model from MLflow ===
 def get_latest_model_version(model_name):
     client = mlflow.MlflowClient()
-    versions = client.get_latest_versions(model_name, stages=["Production", "Staging", "None"])
+    versions = client.get_latest_versions(model_name, stages=["Production"])
     return versions[0].version if versions else None
 
 model_name = "calories-burnt-xgb"  # ✅ Replace if needed
@@ -85,8 +84,7 @@ def predict():
 
         return render_template("index.html", result=prediction)
 
-    except Exception as e:
-        logging.error(f"❌ Prediction failed: {e}")
+    except Exception as e:  
         return render_template("index.html", result="Prediction failed. Please check your inputs.")
 
 @app.route("/metrics", methods=["GET"])

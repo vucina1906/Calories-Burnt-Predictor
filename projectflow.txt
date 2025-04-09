@@ -40,8 +40,9 @@
 31. Add s3 as dvc remote storage - dvc remote add -d myremote s3://<bucket-name>
 32. Run dvc status and dvc commit commands (check dvc lock file if everything is tracked)
 33. dvc push (tracking files pushed to s3 bucket) - image name ./3_dvc_push_to_s3_bucket
-34. Create new directory flask_app and inside that all files related to application
-35. Inside flask_app folder create requirements.txt file that will be used by docker (separated from project root folder requirements.txt file to reduce the size of Docker image) 
+34. Create new directory flask_app and inside that all files related to application. Change in flask_app/app.py file line 45, stages = ["Staging"]. 
+35. Inside flask_app folder create requirements.txt file that will be used by docker (separated from project root folder requirements.txt file to reduce the size of Docker image).
+    Do commands pip install pipreqs and after that cd flask_app & do "pipreqs . --force", this will put only neccessery packages for the app into requirements.txt file
 36. pip install -r flask_app/requirements.txt (so you can install packages needed for aplication local testing) 
 37. run app from root folder with command python -m flask_app.app (local app testing) - image 1_app_local_testing 
 38. pip freeze > requirements.txt (saved in root folder, requirements for the whole project, you can install at the beggining of the project) 
@@ -57,4 +58,13 @@
     5. After succesfull CICD pipeline you should get new model on MLFLOW in stageing phase
 
 42. Add directories "tests"&"scripts" and files within them. This will contain our test related scripts for CI.yaml. Each time when we run ci.yaml we need to test model and promote best one from Staging to Production phase. We are also testing the aplication.
-43. Add, commit and push your code so new CICD pipeline is triggered and ci.yaml fun run till line 57.
+43. Add, commit and push your code so new CICD pipeline is triggered and ci.yaml fun run till line 57. Images 5_CICD_second_pipeline and 6_Model_pushed_to_production_stage 
+44. Change in flask_app/app.py file line 45, stages = ["Production"] . Before this step it was  stages = ["Staging"]
+
+--------------------------- Moving to Docker -----------------------------------------------
+45. Create dockerfile and start docker-desktop in background (first we will test image locally to check for potential bugs). Production code in Dockerfile is commented out in this phase.
+46. Go to root dir and: "docker build -t calories-burnt-pred-app:latest ."    
+47. Run image and create container with command: "docker run -p 8888:5000 calories-burnt-pred-app:latest" and your app will run on link http://127.0.0.1:8888/ check images 8_Docker_Container_Built and 9_Aplication_run_inside_Docker
+48. Create AWS ECR repository called calories-burnt-pred-proj and add into GitHub secrets new one under name ECR_REPOSITORY value is calories-burnt-pred-proj. Another secrets you need to add is your AWS_ACCOUNT_ID
+    Also add this permission to the IAM user: AmazonEC2ContainerRegistryFullAccess
+49. Execute CICD pipeline till the stage where we build and push image to ECR (ci.yaml created till line 85)
