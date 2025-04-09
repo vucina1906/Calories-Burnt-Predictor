@@ -45,7 +45,7 @@
 36. pip install -r flask_app/requirements.txt (so you can install packages needed for aplication local testing) 
 37. run app from root folder with command python -m flask_app.app (local app testing) - image 1_app_local_testing 
 38. pip freeze > requirements.txt (saved in root folder, requirements for the whole project, you can install at the beggining of the project) 
-39. Create .github/workflows/ci.yaml file (till line 34, dvc repro part)
+39. Create .github/workflows/ci.yaml file (till line 38, dvc repro part)
 40. Create key token on Dagshub for auth: Go to dagshub repo > Your settings > Tokens > Generate new token (name Calories-Burnt-Pred)
     >> Make sure to save token 
     >> Add this auth token to github project repository, go to security/secret&var/Actions and finally update on ci file (name )
