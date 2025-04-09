@@ -11,7 +11,7 @@ from src.logger import logging
 #Below is code for production use 
 dagshub_token = os.getenv("CALORIES_BURNT_PRED")
 if dagshub_token:
-    os.environ["MLFLOW_TRACKING_USERNAME"] = "vucina19931906" #your dugshub username
+    os.environ["MLFLOW_TRACKING_USERNAME"] = dagshub_token
     os.environ["MLFLOW_TRACKING_PASSWORD"] = dagshub_token
     logging.info("✅ MLflow credentials loaded from CALORIES_BURNT_PRED")
 
