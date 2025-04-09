@@ -48,7 +48,7 @@ jobs:
         env:
           CALORIES_BURNT_PRED: ${{ secrets.CALORIES_BURNT_PRED }}
         run: |
-          python scripts/promote_model.py
+          python -m scripts.promote_model
         
       - name: Run Flask app tests
         if: success()
