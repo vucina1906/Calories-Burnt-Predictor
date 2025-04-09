@@ -36,3 +36,24 @@ jobs:
           S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
         run: |
           dvc repro
+      
+      - name: Run model tests
+        env:
+          CALORIES_BURNT_PRED: ${{ secrets.CALORIES_BURNT_PRED }}
+        run: |
+          python -m unittest discover -s tests -p "test_model.py"
+      
+      - name: Promote model to production
+        if: success()
+        env:
+          CALORIES_BURNT_PRED: ${{ secrets.CALORIES_BURNT_PRED }}
+        run: |
+          python scripts/promote_model.py
+        
+      - name: Run Flask app tests
+        if: success()
+        env:
+          CALORIES_BURNT_PRED: ${{ secrets.CALORIES_BURNT_PRED }}
+        run: python -m unittest tests/test_flask_app.py
+
+

@@ -49,9 +49,12 @@
 40. Create key token on Dagshub for auth: Go to dagshub repo > Your settings > Tokens > Generate new token (name Calories-Burnt-Pred)
     >> Make sure to save token 
     >> Add this auth token to github project repository, go to security/secret&var/Actions and finally update on ci file (name )
-41. git add ./commit/push but before pushing code check for down bellow: 
+41. git add ./commit/push but before pushing code check for down bellow: - image 4_CICD_first_pipeline 
     1. gitignore must have /data/ to not truck files in that folder (this is root data folder not scr/data so do not write /data in gitignore write /data/)
     2. create dagshub token and add to github repository secrets 
     3. check your script and comment local code but uncomment production code that uses dugshub token (model_evaluation.py, model_register.py,app.py)
     4. add AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, S3_BUCKET_NAME and AWS_REGION from your config.json file into GitHub secrets
+    5. After succesfull CICD pipeline you should get new model on MLFLOW in stageing phase
 
+42. Add directories "tests"&"scripts" and files within them. This will contain our test related scripts for CI.yaml. Each time when we run ci.yaml we need to test model and promote best one from Staging to Production phase. We are also testing the aplication.
+43. Add, commit and push your code so new CICD pipeline is triggered and ci.yaml fun run till line 57.
