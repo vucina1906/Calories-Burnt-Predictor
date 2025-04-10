@@ -200,7 +200,7 @@ aws eks --region us-east-1 update-kubeconfig --name flask-app-cluster (This ensu
 
 80. Open Grafana web UI: http://<ec2-public-ip>:3000 (username/pass - admin) so link is 52.3.230.129:3000 for my Graphana
 
-67. Add Prometheus as a Data Source: http://44.199.231.198:9090
+81. Add Prometheus as a Data Source: http://44.199.231.198:9090
     click - Save and Test | Get started with building dashboards.
 
 ------------------------------AWS Resource Cleanup---------------------------
