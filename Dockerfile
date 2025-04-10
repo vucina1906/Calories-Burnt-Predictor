@@ -21,7 +21,7 @@ RUN pip install -r requirements.txt
 EXPOSE 5000
 
 # Code for local use
-CMD ["python", "app.py"]
+# CMD ["python", "app.py"]
 
 # Code for production use - Start the app using gunicorn
-# CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--timeout", "120", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--timeout", "120", "app:app"]

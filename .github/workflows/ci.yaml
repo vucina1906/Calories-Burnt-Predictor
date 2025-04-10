@@ -84,3 +84,26 @@ jobs:
         run: |
           docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
 
+      - name: Set Up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Update kubeconfig for EKS
+        run: |
+          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name flask-app-cluster
+
+      - name: Create Kubernetes Secret (for environment variable)
+        run: |
+          kubectl create secret generic calories-secret \
+            --from-literal=CALORIES_BURNT_PRED=${{ secrets.CALORIES_BURNT_PRED }} \
+            --from-literal=AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+            --from-literal=AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+            --from-literal=AWS_REGION=${{ secrets.AWS_REGION }} \
+            --from-literal=S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Deploy to EKS
+        run: |
+          kubectl apply -f deployment.yaml
+
