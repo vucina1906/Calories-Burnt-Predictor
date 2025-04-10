@@ -118,18 +118,98 @@ aws eks --region us-east-1 update-kubeconfig --name flask-app-cluster (This ensu
 60. Deploy the app on EKS via CICD pipeline 
   >> edit ci.yaml, full file creation, creation of deployment.yaml, edit dockerfile (comment out code for local use and uncomment for production use)
   >> Also edit the security group for nodes and edit inbound rule for 5000 port (go into EC2, find instance that was automatically created during EKS cluster creation, go inside instance and in Security tab enter security groups. Edit inbound rules) - image 13_Change_inbound_rules_on_EKS_cluster_EC2
+  >> For every case go into ec2 instance and add AmazonEC2ContainerRegistryFullAccess policy to the instance that represent our EKS cluster node so it can pull images from ECR
+  >> In deployment.yaml file update line 19 with your docker image url on ECR
   >> Now by doing gid . , commit and push you will deploy the app - image 14_Application_deployment_on_AWS_EKS_server
 
 61. Verify the deployment:
     kubectl get pods
     kubectl get svc
 
-62. I had problem that each time I do kubectl get pods my Status is "ImagePullBackOff". I deleted old repository in ECR and created new one under name flask-app. 
-    Then I also change in GitHub secrets, secret ECR_REPOSITORY updated to new name flask-app
-    Then I rerun last succesfull CICD pipeline 
-
 62. Once the LoadBalancer service is up, get the external IP:
     kubectl get svc flask-app-service
     > I got aa41626d38f0245b48ed006810eac4bc-1107424181.us-east-1.elb.amazonaws.com so I will add port 5000 at the end 
-    > final ip for the app is aa41626d38f0245b48ed006810eac4bc-1107424181.us-east-1.elb.amazonaws.com:5000
+    > final ip for the app is http://aa41626d38f0245b48ed006810eac4bc-1107424181.us-east-1.elb.amazonaws.com:5000
 
+
+
+------------------------------ Prometheus Server Setup ----------------------------
+
+63. Launch an Ubuntu EC2 Instance for Prometheus: t3.medium,  20GB of disk space (general-purpose SSD), Security Group: Allow inbound access on ports: 9090 for Prometheus Web UI, 22 for SSH access
+
+64. SSH into the EC2 Instance(optional or connect directly to ec2 server alternatively):
+    ssh -i your-key.pem ubuntu@your-ec2-public-ip
+
+65. Update packages: sudo apt update && sudo apt upgrade -y (command in EC2 instance terminal)
+
+66. Download Prometheus on our new EC2 instance:
+    > wget https://github.com/prometheus/prometheus/releases/download/v2.46.0/prometheus-2.46.0.linux-amd64.tar.gz
+    > tar -xvzf prometheus-2.46.0.linux-amd64.tar.gz
+    > mv prometheus-2.46.0.linux-amd64 prometheus
+
+67. Move files to standard paths:
+    sudo mv prometheus /etc/prometheus
+    sudo mv /etc/prometheus/prometheus /usr/local/bin/
+
+68. Create Prometheus Configuration (we need to edit Prometheus yaml file): 
+    >> Open the file for editing: sudo nano /etc/prometheus/prometheus.yml
+    >> Edit the File:
+
+    global:
+      scrape_interval: 15s
+
+    scrape_configs:
+      - job_name: "flask-app"
+        static_configs:
+          - targets: ["aa41626d38f0245b48ed006810eac4bc-1107424181.us-east-1.elb.amazonaws.com:5000"]  # Replace with your app's External IP
+
+    >> Save the File: ctrl+o -> enter -> ctrl+x
+    >> Verify the Changes: cat /etc/prometheus/prometheus.yml
+
+69. Locate the Prometheus Binary(Run the following command to find where the prometheus executable is installed):
+    > which prometheus
+    This should return the full path to the prometheus binary, such as /usr/local/bin/Prometheus
+
+70. Run Prometheus with the config file:
+    > /usr/local/bin/prometheus --config.file=/etc/prometheus/prometheus.yml
+
+71. Now go to instance that you create for Prometheus and inside security groups add inbound rule for port 9090 and add access from anywhere
+    Now you copy publi ipv4 adress of prometheus instance and add port 9090 and you will access Prometheus that is scraping your EKS deployed application (image 18_Prometheus_started_scraping_application_metrics)
+
+
+--------------------------------- Grafana Server Setup ----------------------------
+
+72. Launch an Ubuntu EC2 Instance for Grafana: t3.medium,  20GB of disk space (general-purpose SSD), Security Group: Allow inbound access on ports: 3000 for Grafana Web UI, 22 for SSH access
+
+73. SSH into the EC2 Instance(optional or connect directly through AWS UI to ec2 server alternatively):
+    ssh -i your-key.pem ubuntu@your-ec2-public-ip
+
+74. Update and upgrade system packages:
+    sudo apt update && sudo apt upgrade -y
+
+75. Download Grafana: wget https://dl.grafana.com/oss/release/grafana_10.1.5_amd64.deb
+    (this is a stable version for now; adjust the link if necessary.)
+
+76. Install Grafana: sudo apt install ./grafana_10.1.5_amd64.deb -y
+
+77. Start the Grafana service: sudo systemctl start grafana-server
+
+78. Enable Grafana to start on boot: sudo systemctl enable grafana-server
+
+79. Verify the service is running: sudo systemctl status grafana-server
+
+80. Open Grafana web UI: http://<ec2-public-ip>:3000 (username/pass - admin) so link is 52.3.230.129:3000 for my Graphana
+
+67. Add Prometheus as a Data Source: http://44.199.231.198:9090
+    click - Save and Test | Get started with building dashboards.
+
+------------------------------AWS Resource Cleanup---------------------------
+
+* Delete deployment - kubectl delete deployment flask-app
+* Delete service - kubectl delete service flask-app-service
+* Delete env var - kubectl delete secret calories-secret
+* Delete EKS Cluster - eksctl delete cluster --name flask-app-cluster --region us-east-1
+* Verify Cluster Deletion - eksctl get cluster --region us-east-1
+* Delete artifacts of ECR and S3 (optional - delete ECR and S3)
+* Validate if Cloud Formation stacks are deleted.
+* Confirm service termination on AWS support chat.
